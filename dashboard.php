@@ -193,7 +193,7 @@ $pedidosPendientes = 0;
         <!-- Welcome Section -->
         <div class="welcome-section">
             <h1><i class="fas fa-chart-line me-2"></i>Dashboard</h1>
-            <p class="mb-0">Bienvenido, <?= htmlspecialchars($_SESSION['nombre']) ?>. Aquí tienes un resumen de tu negocio.</p>
+            <p class="mb-0">Bienvenido, <?= htmlspecialchars($_SESSION['nombre']) ?>. Acá tenes un resumen del supermercado.</p>
         </div>
 
         <!-- Stats Cards -->

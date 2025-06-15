@@ -408,12 +408,12 @@ $ventas = $stmt->fetchAll();
 
         function viewSale(id) {
             alert(`Ver detalles de la venta #${id}`);
-            // Aquí puedes implementar un modal con los detalles de la venta
+            
         }
 
         function printSale(id) {
             alert(`Imprimir venta #${id}`);
-            // Aquí puedes implementar la funcionalidad de impresión
+            
         }
 
         // Auto-hide alerts
