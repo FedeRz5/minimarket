@@ -5,9 +5,9 @@ class Database {
     private $connection;
     
     private $host = 'localhost';
-    private $database = 'u627642951_minimarket';
-    private $username = 'u627642951_user';        // ← Usuario correcto
-    private $password = 'Messicapo2005';            // ← Contraseña vacía (sin comillas dentro)
+    private $database = 'minimarket';
+    private $username = 'root';        // ← Usuario correcto
+    private $password = '';            // ← Contraseña vacía (sin comillas dentro)
     
     // Patrón Singleton
     private function __construct() {
