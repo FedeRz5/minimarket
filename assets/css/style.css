@@ -1,4 +1,27 @@
-/* Estilos personalizados para el sistema */
+/* ================================
+   ESTILOS PERSONALIZADOS PARA EL SISTEMA MINIMARKET
+   ================================ */
+
+/* ================================
+   BASE STYLES - ESTILOS GENERALES
+   ================================ */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f8f9fa;
+  padding-top: 56px;
+}
+
+/* ================================
+   NAVBAR - BARRA DE NAVEGACIÓN
+   ================================ */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1050;
+}
+
+/* ================================
+   SIDEBAR - BARRA LATERAL (DESKTOP)
+   ================================ */
 .sidebar {
   position: fixed;
   top: 56px;
@@ -7,6 +30,9 @@
   z-index: 100;
   padding: 48px 0 0;
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+  width: 250px;
+  background: white;
+  height: calc(100vh - 56px);
 }
 
 .sidebar .nav-link {
@@ -21,6 +47,7 @@
 .sidebar .nav-link:hover {
   background-color: #007bff;
   color: white;
+  transform: translateX(5px);
 }
 
 .sidebar .nav-link.active {
@@ -28,11 +55,18 @@
   color: white;
 }
 
+/* ================================
+   MAIN CONTENT - CONTENIDO PRINCIPAL (DESKTOP)
+   ================================ */
 .main-content {
-  margin-left: 240px;
-  padding: 20px;
+  margin-left: 250px;
+  padding: 2rem;
+  min-height: calc(100vh - 56px);
 }
 
+/* ================================
+   CARDS - TARJETAS GENERALES
+   ================================ */
 .card {
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   border: 1px solid rgba(0, 0, 0, 0.125);
@@ -43,22 +77,58 @@
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
+/* ================================
+   STATS CARDS - TARJETAS DE ESTADÍSTICAS (DASHBOARD)
+   ================================ */
 .stats-card {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
+  border-radius: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .stats-card .card-body {
   padding: 1.5rem;
 }
 
-.stats-card h3 {
-  font-size: 2.5rem;
+.stats-card h3,
+.stats-card .stats-number {
+  font-size: 3rem;
   font-weight: bold;
   margin-bottom: 0;
 }
 
+.stats-card .stats-label {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.stats-card.sales {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stats-card.products {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.stats-card.employees {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.stats-card.orders {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  color: #333;
+}
+
+/* ================================
+   BUTTONS - BOTONES GENERALES
+   ================================ */
 .btn-primary {
   background-color: #007bff;
   border-color: #007bff;
@@ -71,6 +141,9 @@
   transform: translateY(-1px);
 }
 
+/* ================================
+   TABLES - TABLAS GENERALES
+   ================================ */
 .table {
   background-color: white;
 }
@@ -81,30 +154,333 @@
   font-weight: 600;
 }
 
-.alert {
-  border: none;
-  border-radius: 10px;
+.table td {
+  vertical-align: middle;
 }
 
+/* ================================
+   FORMS - FORMULARIOS GENERALES
+   ================================ */
 .form-control:focus {
   border-color: #007bff;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Responsive */
+/* ================================
+   ALERTS - ALERTAS GENERALES
+   ================================ */
+.alert {
+  border: none;
+  border-radius: 10px;
+}
+
+/* ================================
+   PAGE HEADERS - CABECERAS DE PÁGINA (TODAS LAS SECCIONES)
+   ================================ */
+.page-header {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================
+   WELCOME SECTION - SECCIÓN DE BIENVENIDA (DASHBOARD)
+   ================================ */
+.welcome-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 15px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================
+   CHART CONTAINER - CONTENEDOR DE GRÁFICOS (DASHBOARD)
+   ================================ */
+.chart-container {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+}
+
+/* ================================
+   VENTAS - ESTILOS ESPECÍFICOS PARA MÓDULO DE VENTAS
+   ================================ */
+.product-row {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px solid #dee2e6;
+}
+
+.total-section {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+
+/* ================================
+   CAJAS - ESTILOS ESPECÍFICOS PARA MÓDULO DE CAJAS
+   ================================ */
+.cash-status {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border-radius: 15px;
+}
+
+.cash-closed {
+  background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+}
+
+/* TABLA DE CAJAS - HEADER NEGRO ESPECÍFICO */
+.cash-table .table thead th {
+  background-color: #212529 !important;
+  color: #ffffff !important;
+  border-color: #32383e !important;
+  font-weight: 600 !important;
+}
+
+.cash-table .table-dark th {
+  background-color: #212529 !important;
+  color: #ffffff !important;
+  border-color: #32383e !important;
+}
+
+.cash-table .table tbody tr {
+  background-color: #ffffff;
+}
+
+.cash-table .table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.cash-table .table tbody td {
+  background-color: #ffffff;
+  color: #212529;
+}
+
+/* ================================
+   MOBILE HAMBURGER MENU - MENÚ HAMBURGUESA MÓVIL
+   ================================ */
+
+/* Botón hamburguesa - SIEMPRE VISIBLE EN MOBILE */
+.mobile-menu-btn {
+  display: none;
+  position: fixed;
+  top: 65px;
+  left: 15px;
+  z-index: 1060;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: #0056b3;
+  transform: scale(1.05);
+}
+
+.mobile-menu-btn i {
+  font-size: 1.2rem;
+}
+
+/* Overlay para cerrar el menú */
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 150;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-overlay.show {
+  opacity: 1;
+}
+
+/* Botón toggle original - mantener para compatibilidad */
+.toggle-sidebar {
+  display: none;
+}
+
+/* ================================
+   RESPONSIVE DESIGN - DISEÑO RESPONSIVO
+   ================================ */
+
 @media (max-width: 768px) {
-  .sidebar {
-    position: relative;
-    top: 0;
-    height: auto;
+  /* MOSTRAR BOTÓN HAMBURGUESA - FORZAR VISIBILIDAD */
+  .mobile-menu-btn {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
+  /* Ocultar sidebar por defecto */
+  .sidebar {
+    display: none;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  /* Sidebar cuando está abierto */
+  .sidebar.show {
+    display: block;
+    position: fixed;
+    top: 56px;
+    left: 0;
+    width: 280px;
+    height: calc(100vh - 56px);
+    z-index: 200;
+    transform: translateX(0);
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* CONTENIDO PRINCIPAL - MISMO ESPACIADO EN TODAS LAS PÁGINAS */
   .main-content {
-    margin-left: 0;
+    margin-left: 0 !important;
+    padding: 15px !important;
+    padding-top: 60px !important; /* Espacio para el botón hamburguesa */
+    min-height: calc(100vh - 56px) !important;
+  }
+
+  /* Mostrar botón toggle original si existe */
+  .toggle-sidebar {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    margin: 10px;
+    z-index: 2100;
+  }
+
+  /* Page headers responsive - TODAS LAS PÁGINAS */
+  .page-header {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+    text-align: center;
+  }
+
+  .page-header .d-flex {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .page-header h2 {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    font-size: 0.9rem;
+  }
+
+  /* Ajustes para elementos en mobile - TODAS LAS PÁGINAS */
+  .stats-card h3,
+  .stats-card .stats-number {
+    font-size: 2rem;
+  }
+
+  .stats-card .card-body {
+    padding: 1rem;
+  }
+
+  .table-responsive {
+    font-size: 0.85rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+  }
+
+  /* Welcome section responsive - DASHBOARD */
+  .welcome-section {
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .welcome-section h1 {
+    font-size: 1.75rem;
+  }
+
+  /* Chart container responsive - DASHBOARD */
+  .chart-container {
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+
+  /* Navbar adjustments - TODAS LAS PÁGINAS */
+  .navbar-text {
+    font-size: 0.85rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.1rem;
   }
 }
 
-/* Animaciones */
+@media (max-width: 576px) {
+  .mobile-menu-btn {
+    top: 60px;
+    left: 10px;
+    padding: 10px;
+  }
+
+  .main-content {
+    padding: 10px !important;
+    padding-top: 55px !important;
+  }
+
+  .page-header {
+    padding: 0.75rem !important;
+  }
+
+  .page-header h2 {
+    font-size: 1.25rem !important;
+  }
+
+  .stats-card h3,
+  .stats-card .stats-number {
+    font-size: 1.75rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.4rem 0.2rem;
+    font-size: 0.75rem;
+  }
+
+  .welcome-section h1 {
+    font-size: 1.4rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.1rem;
+  }
+}
+
+/* ================================
+   ANIMACIONES - EFECTOS VISUALES
+   ================================ */
+
 @keyframes fadeIn {
   from {
     opacity: 0;

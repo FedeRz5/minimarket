@@ -95,49 +95,7 @@ $empleados = $stmt->fetchAll();
     <title>Empleados - MiniMarket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body { 
-            background: #f8f9fa; 
-            padding-top: 56px; /* Espacio para navbar fijo */
-        }
-        .sidebar { 
-            position: fixed; 
-            top: 56px; 
-            left: 0; 
-            height: calc(100vh - 56px); 
-            width: 250px; 
-            background: white; 
-            box-shadow: 2px 0 4px rgba(0,0,0,0.1); 
-            z-index: 1000; 
-        }
-        .main-content { 
-            margin-left: 250px; 
-            padding: 2rem; 
-            min-height: calc(100vh - 56px);
-        }
-        .nav-link { 
-            color: #495057; 
-            padding: 12px 20px; 
-            border-radius: 8px; 
-            margin: 2px 10px; 
-            transition: all 0.3s ease; 
-        }
-        .nav-link:hover { 
-            background: #007bff; 
-            color: white; 
-        }
-        .nav-link.active { 
-            background: #007bff; 
-            color: white; 
-        }
-        .page-header {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-    </style>
+    <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navbar -->
@@ -157,8 +115,16 @@ $empleados = $stmt->fetchAll();
         </div>
     </nav>
 
+    <!-- Botón Hamburguesa para Mobile -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Overlay para cerrar menú en mobile -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="p-3">
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="dashboard.php"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
@@ -321,16 +287,15 @@ $empleados = $stmt->fetchAll();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
     <script>
         function editEmployee(id, usuario, nombre, rol, salario) {
-            // Llenar el modal con los datos del empleado
             document.getElementById('edit_id').value = id;
             document.getElementById('edit_usuario').value = usuario;
             document.getElementById('edit_nombre').value = nombre;
             document.getElementById('edit_rol').value = rol;
             document.getElementById('edit_salario').value = salario;
             
-            // Mostrar el modal
             const modal = new bootstrap.Modal(document.getElementById('editEmployeeModal'));
             modal.show();
         }
@@ -340,15 +305,6 @@ $empleados = $stmt->fetchAll();
                 window.location.href = `empleados.php?delete=${id}`;
             }
         }
-
-        // Auto-hide alerts
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
     </script>
 </body>
 </html>

@@ -37,95 +37,7 @@ $pedidosPendientes = 0;
     <title>Dashboard - MiniMarket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-top: 56px; /* Espacio para navbar fijo */
-        }
-        .navbar {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .sidebar {
-            position: fixed;
-            top: 56px;
-            left: 0;
-            height: calc(100vh - 56px);
-            width: 250px;
-            background: white;
-            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-        .main-content {
-            margin-left: 250px;
-            padding: 2rem;
-            min-height: calc(100vh - 56px);
-        }
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-        .stats-card.sales {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-        .stats-card.products {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        }
-        .stats-card.employees {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        }
-        .stats-card.orders {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            color: #333;
-        }
-        .stats-number {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 0;
-        }
-        .stats-label {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        .nav-link {
-            color: #495057;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin: 2px 10px;
-            transition: all 0.3s ease;
-        }
-        .nav-link:hover {
-            background: #007bff;
-            color: white;
-            transform: translateX(5px);
-        }
-        .nav-link.active {
-            background: #007bff;
-            color: white;
-        }
-        .welcome-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .chart-container {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-top: 2rem;
-        }
-    </style>
+    <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navbar -->
@@ -148,8 +60,16 @@ $pedidosPendientes = 0;
         </div>
     </nav>
 
+    <!-- Botón Hamburguesa para Mobile -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Overlay para cerrar menú en mobile -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="p-3">
             <ul class="nav flex-column">
                 <li class="nav-item">
@@ -202,7 +122,7 @@ $pedidosPendientes = 0;
                 <div class="card stats-card sales h-100">
                     <div class="card-body text-center">
                         <i class="fas fa-shopping-cart fa-2x mb-3"></i>
-                        <h2 class="stats-number"><?= $ventasHoy ?></h2>
+                        <h3 class="stats-number"><?= $ventasHoy ?></h3>
                         <p class="stats-label mb-0">Ventas Hoy</p>
                     </div>
                 </div>
@@ -212,7 +132,7 @@ $pedidosPendientes = 0;
                 <div class="card stats-card products h-100">
                     <div class="card-body text-center">
                         <i class="fas fa-boxes fa-2x mb-3"></i>
-                        <h2 class="stats-number"><?= number_format($totalStock) ?></h2>
+                        <h3 class="stats-number"><?= number_format($totalStock) ?></h3>
                         <p class="stats-label mb-0">Productos en Stock</p>
                     </div>
                 </div>
@@ -222,7 +142,7 @@ $pedidosPendientes = 0;
                 <div class="card stats-card employees h-100">
                     <div class="card-body text-center">
                         <i class="fas fa-users fa-2x mb-3"></i>
-                        <h2 class="stats-number"><?= $empleados ?></h2>
+                        <h3 class="stats-number"><?= $empleados ?></h3>
                         <p class="stats-label mb-0">Empleados</p>
                     </div>
                 </div>
@@ -232,7 +152,7 @@ $pedidosPendientes = 0;
                 <div class="card stats-card orders h-100">
                     <div class="card-body text-center">
                         <i class="fas fa-clock fa-2x mb-3"></i>
-                        <h2 class="stats-number"><?= $pedidosPendientes ?></h2>
+                        <h3 class="stats-number"><?= $pedidosPendientes ?></h3>
                         <p class="stats-label mb-0">Pedidos Pendientes</p>
                     </div>
                 </div>
@@ -273,6 +193,7 @@ $pedidosPendientes = 0;
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
     <script>
         // Actualizar hora en tiempo real
         function updateTime() {

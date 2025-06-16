@@ -101,63 +101,7 @@ $ventas = $stmt->fetchAll();
     <title>Ventas - MiniMarket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body { 
-            background: #f8f9fa; 
-            padding-top: 56px; /* Espacio para navbar fijo */
-        }
-        .sidebar { 
-            position: fixed; 
-            top: 56px; 
-            left: 0; 
-            height: calc(100vh - 56px); 
-            width: 250px; 
-            background: white; 
-            box-shadow: 2px 0 4px rgba(0,0,0,0.1); 
-            z-index: 1000; 
-        }
-        .main-content { 
-            margin-left: 250px; 
-            padding: 2rem; 
-            min-height: calc(100vh - 56px);
-        }
-        .nav-link { 
-            color: #495057; 
-            padding: 12px 20px; 
-            border-radius: 8px; 
-            margin: 2px 10px; 
-            transition: all 0.3s ease; 
-        }
-        .nav-link:hover { 
-            background: #007bff; 
-            color: white; 
-        }
-        .nav-link.active { 
-            background: #007bff; 
-            color: white; 
-        }
-        .page-header {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .product-row {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid #dee2e6;
-        }
-        .total-section {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-        }
-    </style>
+    <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navbar -->
@@ -177,8 +121,16 @@ $ventas = $stmt->fetchAll();
         </div>
     </nav>
 
+    <!-- Botón Hamburguesa para Mobile -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Overlay para cerrar menú en mobile -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="p-3">
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="dashboard.php"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
@@ -328,6 +280,7 @@ $ventas = $stmt->fetchAll();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
     <script>
         function addProduct() {
             const container = document.getElementById('productos-container');
@@ -408,22 +361,11 @@ $ventas = $stmt->fetchAll();
 
         function viewSale(id) {
             alert(`Ver detalles de la venta #${id}`);
-            
         }
 
         function printSale(id) {
             alert(`Imprimir venta #${id}`);
-            
         }
-
-        // Auto-hide alerts
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
 
         // Validar stock antes de enviar
         document.getElementById('saleForm').addEventListener('submit', function(e) {

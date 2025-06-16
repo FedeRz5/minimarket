@@ -44,15 +44,7 @@ $totales = $stmt->fetch();
     <title>Informes - MiniMarket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body { background: #f8f9fa; }
-        .sidebar { position: fixed; top: 56px; left: 0; height: calc(100vh - 56px); width: 250px; background: white; box-shadow: 2px 0 4px rgba(0,0,0,0.1); z-index: 1000; }
-        .main-content { margin-left: 250px; padding: 2rem; }
-        .nav-link { color: #495057; padding: 12px 20px; border-radius: 8px; margin: 2px 10px; transition: all 0.3s ease; }
-        .nav-link:hover { background: #007bff; color: white; }
-        .nav-link.active { background: #007bff; color: white; }
-        .stats-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px; }
-    </style>
+    <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navbar -->
@@ -72,8 +64,16 @@ $totales = $stmt->fetch();
         </div>
     </nav>
 
+    <!-- Botón Hamburguesa para Mobile -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Overlay para cerrar menú en mobile -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="p-3">
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="dashboard.php"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
@@ -90,7 +90,11 @@ $totales = $stmt->fetch();
 
     <!-- Main Content -->
     <div class="main-content">
-        <h2><i class="fas fa-chart-bar me-2 text-warning"></i>Informes y Reportes</h2>
+        <!-- Page Header -->
+        <div class="page-header">
+            <h2 class="mb-1"><i class="fas fa-chart-bar me-2 text-warning"></i>Informes y Reportes</h2>
+            <p class="text-muted mb-0">Analiza el rendimiento de tu negocio</p>
+        </div>
 
         <!-- Resumen General -->
         <div class="row g-4 mb-4">
@@ -168,5 +172,6 @@ $totales = $stmt->fetch();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>
