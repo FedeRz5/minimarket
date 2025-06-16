@@ -19,6 +19,14 @@ body {
   z-index: 1050;
 }
 
+.navbar-dark .navbar-text {
+  color: white;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: white;
+}
+
 /* ================================
    SIDEBAR - BARRA LATERAL (DESKTOP)
    ================================ */
@@ -149,7 +157,7 @@ body {
 }
 
 .table th {
-  background-color: #f8f9fa;
+  background-color: #212529 !important;
   border-top: none;
   font-weight: 600;
 }
@@ -324,6 +332,7 @@ body {
    ================================ */
 
 @media (max-width: 768px) {
+
   /* MOSTRAR BOTÓN HAMBURGUESA - FORZAR VISIBILIDAD */
   .mobile-menu-btn {
     display: block !important;
@@ -355,7 +364,8 @@ body {
   .main-content {
     margin-left: 0 !important;
     padding: 15px !important;
-    padding-top: 60px !important; /* Espacio para el botón hamburguesa */
+    padding-top: 60px !important;
+    /* Espacio para el botón hamburguesa */
     min-height: calc(100vh - 56px) !important;
   }
 
@@ -435,6 +445,7 @@ body {
   .navbar-brand {
     font-size: 1.1rem;
   }
+
 }
 
 @media (max-width: 576px) {
@@ -486,6 +497,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -511,6 +523,7 @@ body {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }

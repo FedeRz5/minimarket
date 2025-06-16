@@ -70,6 +70,48 @@ class Sale {
         $this->items[] = $item;
         $this->calculateTotal();
     }
+
+    public function findById($id) {
+        $sql = "SELECT v.id_usuario, v.id_cliente, v.fecha, v.total
+        FROM ventas v
+        INNER JOIN ventas_items vi ON v.id = vi.id_venta
+        WHERE v.id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        $result = $stmt->fetch();
+
+        // Set the values to the class
+        if($result) {
+            $this->id = $id;
+            $this->userId = $result['id_usuario'];
+            $this->clientId = $result['id_cliente'];
+            $this->date = $result['fecha'];
+            $this->total = $result['total'];
+            $this->items = $this->fetchItems();
+            return true;
+        }
+
+        return false;
+    }
+
+     public function fetchItems() {
+        $sql = "SELECT *
+                FROM ventas_items vi
+                WHERE vi.id_venta = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$this->id]);
+        $items = $stmt->fetchAll();
+
+        $saleItems = array();
+        foreach ($items as $item) {
+            $saleItem = new SaleItem($item['id'], $item['cantidad'], $item['precio_unitario']);
+            $saleItem->setSaleId($item['id_venta']);
+            $saleItems[] = $saleItem;
+        }
+
+        return $saleItems;
+    }
+
     
     public function removeItem($index) {
         if (isset($this->items[$index])) {
