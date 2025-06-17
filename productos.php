@@ -13,56 +13,115 @@ $pdo = $db->getConnection();
 
 // Eliminar producto
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
-    $stmt = $pdo->prepare("DELETE FROM productos WHERE id = ?");
-    if ($stmt->execute([$_GET['delete']])) {
-        header('Location: productos.php?msg=deleted');
+    try {
+        // Establecer variable de usuario para triggers
+        $pdo->exec("SET @user_id = " . $_SESSION['id_usuario']);
+        
+        $stmt = $pdo->prepare("DELETE FROM productos WHERE id = ?");
+        if ($stmt->execute([$_GET['delete']])) {
+            header('Location: productos.php?msg=deleted');
+            exit;
+        }
+    } catch (Exception $e) {
+        error_log("Error al eliminar producto: " . $e->getMessage());
+        header('Location: productos.php?msg=error_delete');
         exit;
     }
 }
 
-// Editar producto
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_producto'])) {
-    $id = intval($_POST['id']);
-    $nombre = trim($_POST['nombre']);
-    $categoria = trim($_POST['categoria']);
-    $precio = floatval($_POST['precio']);
-    $stock = intval($_POST['stock']);
-
-    if ($nombre && $precio > 0 && $stock >= 0) {
-        $stmt = $pdo->prepare("UPDATE productos SET nombre = ?, categoria = ?, precio = ?, stock = ? WHERE id = ?");
-        if ($stmt->execute([$nombre, $categoria, $precio, $stock, $id])) {
-            $mensaje = "Producto actualizado correctamente.";
-        } else {
-            $mensaje = "Error al actualizar producto.";
-        }
-    } else {
-        $mensaje = "Complete todos los campos correctamente.";
-    }
-}
-
-// Agregar producto
+// Editar producto - CON MANEJO DE TRIGGERS
 $mensaje = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['agregar_producto'])) {
-    $nombre = trim($_POST['nombre']);
-    $categoria = trim($_POST['categoria']);
-    $precio = floatval($_POST['precio']);
-    $stock = intval($_POST['stock']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_producto'])) {
+    try {
+        $id = intval($_POST['id']);
+        $nombre = trim($_POST['nombre']);
+        $categoria = trim($_POST['categoria']);
+        $precio = floatval($_POST['precio']);
+        $stock = intval($_POST['stock']);
 
-    if ($nombre && $precio > 0 && $stock >= 0) {
-        $stmt = $pdo->prepare("INSERT INTO productos (nombre, categoria, precio, stock) VALUES (?, ?, ?, ?)");
-        if ($stmt->execute([$nombre, $categoria, $precio, $stock])) {
-            $mensaje = "Producto agregado correctamente.";
-        } else {
-            $mensaje = "Error al agregar producto.";
+        // Validaciones básicas
+        if (empty($nombre)) {
+            throw new Exception("El nombre del producto es requerido");
         }
-    } else {
-        $mensaje = "Complete todos los campos correctamente.";
+        
+        if ($precio <= 0) {
+            throw new Exception("El precio debe ser mayor a 0");
+        }
+        
+        if ($stock < 0) {
+            throw new Exception("El stock no puede ser negativo");
+        }
+
+        // IMPORTANTE: Establecer variable de usuario para triggers
+        $pdo->exec("SET @user_id = " . $_SESSION['id_usuario']);
+
+        // Actualizar producto
+        $stmt = $pdo->prepare("UPDATE productos SET nombre = ?, categoria = ?, precio = ?, stock = ? WHERE id = ?");
+        $result = $stmt->execute([$nombre, $categoria, $precio, $stock, $id]);
+        
+        if (!$result) {
+            $errorInfo = $stmt->errorInfo();
+            throw new Exception("Error en la base de datos: " . $errorInfo[2]);
+        }
+
+        $mensaje = "Producto actualizado correctamente.";
+
+    } catch (Exception $e) {
+        $mensaje = "Error: " . $e->getMessage();
+        error_log("ERROR en productos.php (editar): " . $e->getMessage());
     }
 }
 
-// Mensaje de eliminación
-if (isset($_GET['msg']) && $_GET['msg'] === 'deleted') {
-    $mensaje = "Producto eliminado correctamente.";
+// Agregar producto - CON MANEJO DE TRIGGERS
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['agregar_producto'])) {
+    try {
+        $nombre = trim($_POST['nombre']);
+        $categoria = trim($_POST['categoria']);
+        $precio = floatval($_POST['precio']);
+        $stock = intval($_POST['stock']);
+
+        // Validaciones básicas
+        if (empty($nombre)) {
+            throw new Exception("El nombre del producto es requerido");
+        }
+        
+        if ($precio <= 0) {
+            throw new Exception("El precio debe ser mayor a 0");
+        }
+        
+        if ($stock < 0) {
+            throw new Exception("El stock no puede ser negativo");
+        }
+
+        // IMPORTANTE: Establecer variable de usuario para triggers
+        $pdo->exec("SET @user_id = " . $_SESSION['id_usuario']);
+
+        $stmt = $pdo->prepare("INSERT INTO productos (nombre, categoria, precio, stock) VALUES (?, ?, ?, ?)");
+        $result = $stmt->execute([$nombre, $categoria, $precio, $stock]);
+        
+        if (!$result) {
+            $errorInfo = $stmt->errorInfo();
+            throw new Exception("Error en la base de datos: " . $errorInfo[2]);
+        }
+
+        $mensaje = "Producto agregado correctamente.";
+
+    } catch (Exception $e) {
+        $mensaje = "Error: " . $e->getMessage();
+        error_log("ERROR en productos.php (agregar): " . $e->getMessage());
+    }
+}
+
+// Mensajes de URL
+if (isset($_GET['msg'])) {
+    switch ($_GET['msg']) {
+        case 'deleted':
+            $mensaje = "Producto eliminado correctamente.";
+            break;
+        case 'error_delete':
+            $mensaje = "Error: No se pudo eliminar el producto.";
+            break;
+    }
 }
 
 // Listar productos
@@ -138,8 +197,8 @@ $productos = $stmt->fetchAll();
         </div>
 
         <?php if ($mensaje): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i><?= htmlspecialchars($mensaje) ?>
+            <div class="alert <?= strpos($mensaje, 'Error') !== false ? 'alert-danger' : 'alert-success' ?> alert-dismissible fade show" role="alert">
+                <i class="fas <?= strpos($mensaje, 'Error') !== false ? 'fa-exclamation-triangle' : 'fa-check-circle' ?> me-2"></i><?= htmlspecialchars($mensaje) ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
@@ -167,7 +226,13 @@ $productos = $stmt->fetchAll();
                                     </span>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editProduct(<?= $p['id'] ?>, '<?= htmlspecialchars($p['nombre']) ?>', '<?= htmlspecialchars($p['categoria']) ?>', <?= $p['precio'] ?>, <?= $p['stock'] ?>)">
+                                    <button class="btn btn-sm btn-outline-primary me-1" 
+                                            data-id="<?= $p['id'] ?>"
+                                            data-nombre="<?= htmlspecialchars($p['nombre']) ?>"
+                                            data-categoria="<?= htmlspecialchars($p['categoria']) ?>"
+                                            data-precio="<?= $p['precio'] ?>"
+                                            data-stock="<?= $p['stock'] ?>"
+                                            onclick="editProduct(this)">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(<?= $p['id'] ?>, '<?= htmlspecialchars($p['nombre']) ?>')">
@@ -204,11 +269,11 @@ $productos = $stmt->fetchAll();
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Precio</label>
-                            <input type="number" step="0.01" class="form-control" name="precio" required>
+                            <input type="number" step="0.01" min="0.01" class="form-control" name="precio" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Stock</label>
-                            <input type="number" class="form-control" name="stock" required>
+                            <input type="number" min="0" class="form-control" name="stock" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -242,11 +307,11 @@ $productos = $stmt->fetchAll();
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Precio</label>
-                            <input type="number" step="0.01" class="form-control" name="precio" id="edit_precio" required>
+                            <input type="number" step="0.01" min="0.01" class="form-control" name="precio" id="edit_precio" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Stock</label>
-                            <input type="number" class="form-control" name="stock" id="edit_stock" required>
+                            <input type="number" min="0" class="form-control" name="stock" id="edit_stock" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -261,7 +326,13 @@ $productos = $stmt->fetchAll();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script>
-        function editProduct(id, nombre, categoria, precio, stock) {
+        function editProduct(button) {
+            const id = button.getAttribute('data-id');
+            const nombre = button.getAttribute('data-nombre');
+            const categoria = button.getAttribute('data-categoria');
+            const precio = button.getAttribute('data-precio');
+            const stock = button.getAttribute('data-stock');
+            
             document.getElementById('edit_id').value = id;
             document.getElementById('edit_nombre').value = nombre;
             document.getElementById('edit_categoria').value = categoria;

@@ -72,46 +72,55 @@ class Sale {
     }
 
     public function findById($id) {
-        $sql = "SELECT v.id_usuario, v.id_cliente, v.fecha, v.total
-        FROM ventas v
-        INNER JOIN ventas_items vi ON v.id = vi.id_venta
-        WHERE v.id = ?";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$id]);
-        $result = $stmt->fetch();
+        try {
+            // Buscar la venta principal
+            $sql = "SELECT id, id_usuario, id_cliente, fecha, total FROM ventas WHERE id = ?";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$id]);
+            $result = $stmt->fetch();
 
-        // Set the values to the class
-        if($result) {
-            $this->id = $id;
-            $this->userId = $result['id_usuario'];
-            $this->clientId = $result['id_cliente'];
-            $this->date = $result['fecha'];
-            $this->total = $result['total'];
-            $this->items = $this->fetchItems();
-            return true;
+            if ($result) {
+                $this->id = $result['id'];
+                $this->userId = $result['id_usuario'];
+                $this->clientId = $result['id_cliente'];
+                $this->date = $result['fecha'];
+                $this->total = $result['total'];
+                
+                // Cargar los items
+                $this->items = $this->fetchItems();
+                return true;
+            }
+
+            return false;
+        } catch (Exception $e) {
+            error_log("Error en Sale::findById: " . $e->getMessage());
+            return false;
         }
-
-        return false;
     }
 
-     public function fetchItems() {
-        $sql = "SELECT *
-                FROM ventas_items vi
-                WHERE vi.id_venta = ?";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$this->id]);
-        $items = $stmt->fetchAll();
+    public function fetchItems() {
+        try {
+            $sql = "SELECT id, id_venta, id_producto, cantidad, precio_unitario
+                    FROM ventas_items 
+                    WHERE id_venta = ?
+                    ORDER BY id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$this->id]);
+            $items = $stmt->fetchAll();
 
-        $saleItems = array();
-        foreach ($items as $item) {
-            $saleItem = new SaleItem($item['id'], $item['cantidad'], $item['precio_unitario']);
-            $saleItem->setSaleId($item['id_venta']);
-            $saleItems[] = $saleItem;
+            $saleItems = array();
+            foreach ($items as $item) {
+                $saleItem = new SaleItem($item['id_producto'], $item['cantidad'], $item['precio_unitario']);
+                $saleItem->setSaleId($item['id_venta']);
+                $saleItems[] = $saleItem;
+            }
+
+            return $saleItems;
+        } catch (Exception $e) {
+            error_log("Error en Sale::fetchItems: " . $e->getMessage());
+            return array();
         }
-
-        return $saleItems;
     }
-
     
     public function removeItem($index) {
         if (isset($this->items[$index])) {
@@ -132,6 +141,11 @@ class Sale {
         try {
             $this->db->beginTransaction();
             
+            // Establecer variable de usuario para triggers
+            if (isset($_SESSION['id_usuario'])) {
+                $this->db->exec("SET @user_id = " . $_SESSION['id_usuario']);
+            }
+            
             // Guardar la venta
             $stmt = $this->db->prepare("INSERT INTO ventas (id_usuario, id_cliente, fecha, total) VALUES (?, ?, ?, ?)");
             $stmt->execute([$this->userId, $this->clientId, $this->date, $this->total]);
@@ -145,13 +159,16 @@ class Sale {
                 
                 // Actualizar stock del producto
                 $product = $item->getProduct();
-                $product->updateStock(-$item->getQuantity());
+                if ($product) {
+                    $product->updateStock(-$item->getQuantity());
+                }
             }
             
             $this->db->commit();
             return true;
         } catch (Exception $e) {
             $this->db->rollBack();
+            error_log("Error en Sale::save: " . $e->getMessage());
             return false;
         }
     }
@@ -167,3 +184,4 @@ class Sale {
         return $stmt->fetchAll();
     }
 }
+?>
