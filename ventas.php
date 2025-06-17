@@ -4,7 +4,7 @@ require_once 'config/database.php';
 
 if (!isset($_SESSION['id_usuario'])) {
     header('Location: login.php');
-    exit;
+    exit();
 }
 
 // Obtener conexión usando el patrón Singleton
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_venta'])) {
 
             for ($i = 0; $i < count($productos); $i++) {
                 if (!empty($productos[$i]) && !empty($cantidades[$i]) && $cantidades[$i] > 0) {
-                    $stmt = $pdo->prepare("SELECT precio, stock FROM productos WHERE id = ?");
+                    $stmt = $pdo->prepare('SELECT precio, stock FROM productos WHERE id = ?');
                     $stmt->execute([$productos[$i]]);
                     $producto = $stmt->fetch();
 
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_venta'])) {
                         $items_validos[] = [
                             'id_producto' => $productos[$i],
                             'cantidad' => $cantidades[$i],
-                            'precio_unitario' => $producto['precio']
+                            'precio_unitario' => $producto['precio'],
                         ];
                     }
                 }
@@ -46,17 +46,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_venta'])) {
 
             if (!empty($items_validos)) {
                 // Insertar venta
-                $stmt = $pdo->prepare("INSERT INTO ventas (id_usuario, id_cliente, total) VALUES (?, ?, ?)");
+                $stmt = $pdo->prepare('INSERT INTO ventas (id_usuario, id_cliente, total) VALUES (?, ?, ?)');
                 $stmt->execute([$_SESSION['id_usuario'], $id_cliente, $total]);
                 $id_venta = $pdo->lastInsertId();
 
                 // Insertar items y actualizar stock
                 foreach ($items_validos as $item) {
-                    $stmt = $pdo->prepare("INSERT INTO ventas_items (id_venta, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)");
+                    $stmt = $pdo->prepare('INSERT INTO ventas_items (id_venta, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)');
                     $stmt->execute([$id_venta, $item['id_producto'], $item['cantidad'], $item['precio_unitario']]);
 
                     // Actualizar stock
-                    $stmt = $pdo->prepare("UPDATE productos SET stock = stock - ? WHERE id = ?");
+                    $stmt = $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?');
                     $stmt->execute([$item['cantidad'], $item['id_producto']]);
                 }
 
@@ -64,23 +64,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_venta'])) {
                 $mensaje = "Venta registrada correctamente. Total: $" . number_format($total, 2);
             } else {
                 $pdo->rollBack();
-                $mensaje = "Error: No hay productos válidos en la venta.";
+                $mensaje = 'Error: No hay productos válidos en la venta.';
             }
         } catch (Exception $e) {
             $pdo->rollBack();
-            $mensaje = "Error al procesar la venta: " . $e->getMessage();
+            $mensaje = 'Error al procesar la venta: ' . $e->getMessage();
         }
     } else {
-        $mensaje = "Error: Debe agregar al menos un producto.";
+        $mensaje = 'Error: Debe agregar al menos un producto.';
     }
 }
 
 // Obtener productos para el select
-$stmt = $pdo->query("SELECT id, nombre, precio, stock FROM productos WHERE stock > 0 ORDER BY nombre");
+$stmt = $pdo->query('SELECT id, nombre, precio, stock FROM productos WHERE stock > 0 ORDER BY nombre');
 $productos_disponibles = $stmt->fetchAll();
 
 // Obtener clientes para el select
-$stmt = $pdo->query("SELECT id, nombre FROM clientes ORDER BY nombre");
+$stmt = $pdo->query('SELECT id, nombre FROM clientes ORDER BY nombre');
 $clientes = $stmt->fetchAll();
 
 // Listar ventas
@@ -146,8 +146,8 @@ $ventas = $stmt->fetchAll();
                 <li class="nav-item"><a class="nav-link" href="informes.php"><i
                             class="fas fa-chart-bar me-2"></i>Informes</a></li>
                 <?php if ($_SESSION['rol'] === 'jefe'): ?>
-                    <li class="nav-item"><a class="nav-link" href="empleados.php"><i
-                                class="fas fa-users me-2"></i>Empleados</a></li>
+                <li class="nav-item"><a class="nav-link" href="empleados.php"><i
+                            class="fas fa-users me-2"></i>Empleados</a></li>
                 <?php endif; ?>
             </ul>
         </div>
@@ -169,12 +169,12 @@ $ventas = $stmt->fetchAll();
         </div>
 
         <?php if ($mensaje): ?>
-            <div class="alert <?= strpos($mensaje, 'Error') !== false ? 'alert-danger' : 'alert-success' ?> alert-dismissible fade show"
-                role="alert">
-                <i
-                    class="fas <?= strpos($mensaje, 'Error') !== false ? 'fa-exclamation-triangle' : 'fa-check-circle' ?> me-2"></i><?= htmlspecialchars($mensaje) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+        <div class="alert <?= strpos($mensaje, 'Error') !== false ? 'alert-danger' : 'alert-success' ?> alert-dismissible fade show"
+            role="alert">
+            <i
+                class="fas <?= strpos($mensaje, 'Error') !== false ? 'fa-exclamation-triangle' : 'fa-check-circle' ?> me-2"></i><?= htmlspecialchars($mensaje) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
         <?php endif; ?>
 
         <!-- Tabla de ventas -->
@@ -197,25 +197,25 @@ $ventas = $stmt->fetchAll();
                         </thead>
                         <tbody>
                             <?php foreach ($ventas as $v): ?>
-                                <tr>
-                                    <td>#<?= $v['id'] ?></td>
-                                    <td><?= date('d/m/Y H:i', strtotime($v['fecha'])) ?></td>
-                                    <td><?= htmlspecialchars($v['vendedor']) ?></td>
-                                    <td><?= htmlspecialchars($v['cliente'] ?? 'Sin cliente') ?></td>
-                                    <td><strong class="text-success">$<?= number_format($v['total'], 2) ?></strong></td>
-                                    <td>
-                                        <!-- Aquí el id dinámico para ver detalle -->
-                                        <button type="button" class="btn btn-sm btn-outline-info"
-                                            onclick="viewSale(<?= $v['id'] ?>)">
-                                            <i class="fas fa-eye"></i> Ver detalle
-                                        </button>
+                            <tr>
+                                <td>#<?= $v['id'] ?></td>
+                                <td><?= date('d/m/Y H:i', strtotime($v['fecha'])) ?></td>
+                                <td><?= htmlspecialchars($v['vendedor']) ?></td>
+                                <td><?= htmlspecialchars($v['cliente'] ?? 'Sin cliente') ?></td>
+                                <td><strong class="text-success">$<?= number_format($v['total'], 2) ?></strong></td>
+                                <td>
+                                    <!-- Aquí el id dinámico para ver detalle -->
+                                    <button type="button" class="btn btn-sm btn-outline-info"
+                                        onclick="viewSale(<?= $v['id'] ?>)">
+                                        <i class="fas fa-eye"></i> Ver detalle
+                                    </button>
 
 
-                                        <button class="btn btn-sm btn-outline-primary" onclick="printSale(<?= $v['id'] ?>)">
-                                            <i class="fas fa-print"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="printSale(<?= $v['id'] ?>)">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                </td>
+                            </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
@@ -246,8 +246,8 @@ $ventas = $stmt->fetchAll();
                             <select class="form-select" name="id_cliente">
                                 <option value="">Sin cliente</option>
                                 <?php foreach ($clientes as $cliente): ?>
-                                    <option value="<?= $cliente['id'] ?>"><?= htmlspecialchars($cliente['nombre']) ?>
-                                    </option>
+                                <option value="<?= $cliente['id'] ?>"><?= htmlspecialchars($cliente['nombre']) ?>
+                                </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -259,14 +259,16 @@ $ventas = $stmt->fetchAll();
                                 <div class="product-row">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <select class="form-select" name="productos[]" onchange="updatePrice(this)">
+                                            <select class="form-select" name="productos[]"
+                                                onchange="updatePrice(this)">
                                                 <option value="">Seleccionar producto</option>
                                                 <?php foreach ($productos_disponibles as $prod): ?>
-                                                    <option value="<?= $prod['id'] ?>" data-precio="<?= $prod['precio'] ?>"
-                                                        data-stock="<?= $prod['stock'] ?>">
-                                                        <?= htmlspecialchars($prod['nombre']) ?> - Stock:
-                                                        <?= $prod['stock'] ?> - $<?= number_format($prod['precio'], 2) ?>
-                                                    </option>
+                                                <option value="<?= $prod['id'] ?>"
+                                                    data-precio="<?= $prod['precio'] ?>"
+                                                    data-stock="<?= $prod['stock'] ?>">
+                                                    <?= htmlspecialchars($prod['nombre']) ?> - Stock:
+                                                    <?= $prod['stock'] ?> - $<?= number_format($prod['precio'], 2) ?>
+                                                </option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
@@ -286,7 +288,8 @@ $ventas = $stmt->fetchAll();
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addProduct()">
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2"
+                                onclick="addProduct()">
                                 <i class="fas fa-plus me-1"></i>Agregar Producto
                             </button>
                         </div>
@@ -387,14 +390,14 @@ $ventas = $stmt->fetchAll();
             document.getElementById('total-amount').textContent = total.toFixed(2);
         }
 
-      
+
 
         function printSale(id) {
             alert(`Imprimir venta #${id}`);
         }
 
         // Validar stock antes de enviar
-        document.getElementById('saleForm').addEventListener('submit', function (e) {
+        document.getElementById('saleForm').addEventListener('submit', function(e) {
             const rows = document.querySelectorAll('.product-row');
             let valid = true;
 
@@ -407,7 +410,8 @@ $ventas = $stmt->fetchAll();
                     const cantidad = parseInt(cantidadInput.value);
 
                     if (cantidad > stock) {
-                        alert(`Error: La cantidad solicitada (${cantidad}) excede el stock disponible (${stock}) para ${select.selectedOptions[0].text}`);
+                        alert(
+                            `Error: La cantidad solicitada (${cantidad}) excede el stock disponible (${stock}) para ${select.selectedOptions[0].text}`);
                         valid = false;
                     }
                 }
@@ -438,7 +442,7 @@ $ventas = $stmt->fetchAll();
                     </div>
                     <div class="card-body p-0">
                         <table class="table table-striped mb-0">
-                            <thead>
+                            <thead class="table-dark">
                                 <tr>
                                     <th>Producto</th>
                                     <th>Cantidad</th>
@@ -477,4 +481,5 @@ $ventas = $stmt->fetchAll();
     </script>
 
 </body>
+
 </html>
